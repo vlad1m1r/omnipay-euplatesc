@@ -2,46 +2,20 @@
 
 namespace Omnipay\EuPlatesc\Message;
 
+use Omnipay\Common\Message\AbstractResponse;
+
+/**
+ * 2Checkout Complete Purchase Response
+ */
 class CompletePurchaseResponse extends AbstractResponse
 {
-    
-    protected $action;
-    protected $responseError;
-
-    public function __construct(RequestInterface $request, $data, $responseError)
-    {
-        parent::__construct($request, $data);
-
-        $this->request       = $request;
-        $this->responseError = $responseError;
-
-        if (isset($data['action'])) {
-            $this->action = $data['action'];
-        }
-    }
-
     public function isSuccessful()
     {
-        return in_array($this->action, ['0']);
+        return true;
     }
 
-    public function isPending()
+    public function getTransactionReference()
     {
-        return false;
-    }
-
-    public function getMessage()
-    {
-        return $this->action;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function sendResponse()
-    {
-       echo "OK";
+        return isset($this->data['ep_id']) ? $this->data['ep_id'] : null;
     }
 }

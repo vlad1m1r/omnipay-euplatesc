@@ -4,137 +4,66 @@ namespace Omnipay\EuPlatesc\Message;
 
 use Omnipay\Common\Message\AbstractRequest;
 
-
+/**
+ * 2Checkout Purchase Request
+ */
 class PurchaseRequest extends AbstractRequest
 {
-  
-    protected $liveEndpoint = 'https://secure.euplatesc.ro/tdsprocess/tranzactd.php';
-    protected $testEndpoint = 'https://secure.euplatesc.ro/tdsprocess/sandbox.php';
-
-    public function getMerchantID()
+    public function getMID()
     {
-        return $this->getParameter('merchantID');
+        return $this->getParameter('MID');
     }
 
-    public function setMerchantID($value)
+    public function setMID($value)
     {
-        return $this->setParameter('merchantID', $value);
+        return $this->setParameter('MID', $value);
     }
 
-    public function getMerchantKEY()
+    public function getKEY()
     {
-        return $this->getParameter('merchantKEY');
-    }
-	
-	public function setMerchantKEY($value)
-    {
-        return $this->setParameter('merchantKEY', $value);
+        return $this->getParameter('KEY');
     }
 
-    public function getOrderId()
+    public function setKEY($value)
     {
-        return $this->getParameter('orderId');
-    }
-
-    public function setOrderId($value)
-    {
-        return $this->setParameter('orderId', $value);
-    }
-
-    public function getReturnUrl()
-    {
-        return $this->getParameter('returnUrl');
-    }
-
-    public function setReturnUrl($value)
-    {
-        return $this->setParameter('returnUrl', $value);
-    }
-
-    public function getConfirmUrl()
-    {
-        return $this->getParameter('confirmUrl');
-    }
-
-    public function setConfirmUrl($value)
-    {
-        return $this->setParameter('confirmUrl', $value);
-    }
-	
-    public function getParams()
-    {
-        return $this->getParameter('params');
-    }
-
-    public function setParams($value)
-    {
-        return $this->setParameter('params', $value);
-    }
-
-    public function getDetails()
-    {
-        return $this->getParameter('details');
-    }
-
-    public function setDetails($value)
-    {
-        return $this->setParameter('details', $value);
-    }
-
-    public function getPaymentNo()
-    {
-        return $this->getParameter('paymentNo');
-    }
-
-    public function setPaymentNo($value)
-    {
-        return $this->setParameter('paymentNo', $value);
-    }
-
-    public function getBillingAddress()
-    {
-        return $this->getParameter('billingAddress');
-    }
-
-    public function setBillingAddress($value)
-    {
-        $this->setParameter('billingAddress', $value);
+        return $this->setParameter('KEY', $value);
     }
 
     public function getData()
     {
-        $data=array();
-		$data['amount']		= $this->getParameter('amount');
-		$data['curr']		= $this->getParameter('currency');
-		$data['invoice_id']	= $this->getParameter('orderId');
-		$data['order_desc']	= $this->getParameter('details');
-		$data['merch_id']	= $this->getMerchantID();
+        $this->validate('amount', 'returnUrl');
+
+        $data = array();
+		
+		$data=array();
+		$data['amount']		= $this->getAmount();
+		$data['curr']		= $this->getCurrency();
+		$data['invoice_id']	= $this->getTransactionId();
+		$data['order_desc']	= $this->getParameter('description');
+		$data['merch_id']	= $this->getMID();
 		$data['timestamp']	= date("YmdHis");
 		$data['nonce']		= md5(time().mt_rand().microtime());
 		
-        $data['fp_hash']	= $this>euplatesc_mac($data,$this->getMerchantKEY());
-		$data['ExtraData']   = $this->getParameter('params') ?: [];
-
+        $data['fp_hash']	= $this->euplatesc_mac($data,$this->getKEY());
  
-		$data['fname']	= $parameters['firstName'];
-		$data['lname']	= $parameters['lastName'];
-		$data['email']	= $parameters['email'];
-		$data['phone']	= $parameters['mobilePhone'];
-		$data['add']	= $parameters['address'];
-		$data['city']	= $parameters['city'];
-		$data['country']= $parameters['country'];
+ 
+		if ($this->getCard()) {
+            $data['fname'] = $this->getCard()->getName();
+            $data['add'] = $this->getCard()->getAddress1();
+            $data['city'] = $this->getCard()->getCity();
+            $data['state'] = $this->getCard()->getState();
+            $data['zip'] = $this->getCard()->getPostcode();
+            $data['country'] = $this->getCard()->getCountry();
+            $data['phone'] = $this->getCard()->getPhone();
+            $data['email'] = $this->getCard()->getEmail();
+        }
 
         return $data;
     }
 
-    public function getEndpoint()
-    {
-        return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
-    }
-
     public function sendData($data)
     {
-        return $this->response = new PurchaseResponse($this, $data, $this->getEndpoint());
+        return $this->response = new PurchaseResponse($this, $data);
     }
 	
 	public function hmacmd5($key,$data) {

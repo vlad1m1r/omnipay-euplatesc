@@ -3,20 +3,15 @@
 namespace Omnipay\EuPlatesc\Message;
 
 use Omnipay\Common\Message\AbstractResponse;
-use Omnipay\Common\Message\RequestInterface;
 use Omnipay\Common\Message\RedirectResponseInterface;
 
+/**
+ * 2Checkout Purchase Response
+ */
 class PurchaseResponse extends AbstractResponse implements RedirectResponseInterface
 {
-   
-    protected $redirectUrl;
-
-    public function __construct(RequestInterface $request, $data, $redirectUrl)
-    {
-        parent::__construct($request, $data);
-
-        $this->redirectUrl = $redirectUrl;
-    }
+    protected $endpoint = 'https://secure.euplatesc.ro/tdsprocess/tranzactd.php';
+    protected $testEndpoint = 'https://secure.euplatesc.ro/tdsprocess/sandbox.php';
 
     public function isSuccessful()
     {
@@ -30,16 +25,17 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
 
     public function getRedirectUrl()
     {
-        return $this->redirectUrl;
+        $endpoint = $this->getRequest()->getTestMode() ? $this->testendpoint : $this->endpoint;
+        return $endpoint.'?'.http_build_query($this->data);
     }
 
     public function getRedirectMethod()
     {
-        return 'POST';
+        return 'GET';
     }
 
     public function getRedirectData()
     {
-        return $this->getData();
+        return array();
     }
 }

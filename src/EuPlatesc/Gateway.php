@@ -3,12 +3,12 @@
 namespace Omnipay\EuPlatesc;
 
 use Omnipay\Common\AbstractGateway;
-use Omnipay\EuPlatesc\Message\PurchaseRequest;
 use Omnipay\EuPlatesc\Message\CompletePurchaseRequest;
+use Omnipay\EuPlatesc\Message\PurchaseRequest;
+
 
 class Gateway extends AbstractGateway
 {
-   
     public function getName()
     {
         return 'EuPlatesc';
@@ -16,74 +16,39 @@ class Gateway extends AbstractGateway
 
     public function getDefaultParameters()
     {
-        return [
-            'merchantID' => null,
-            'merchantKEY'  => null,
-            'testMode'   => false,
-        ];
+        return array(
+            'MID' => '',
+            'KEY' => '',
+            'testMode' => false,
+        );
     }
 
-    public function getMerchantID()
+    public function getMID()
     {
-        return $this->getParameter('merchantID');
+        return $this->getParameter('MID');
     }
 
-    public function setMerchantID($value)
+    public function setMID($value)
     {
-        return $this->setParameter('merchantID', $value);
+        return $this->setParameter('MID', $value);
     }
 
-    public function getMerchantKEY()
+    public function getKEY()
     {
-        return $this->getParameter('merchantKEY');
-    }
-	
-	public function setMerchantKEY($value)
-    {
-        return $this->setParameter('merchantKEY', $value);
+        return $this->getParameter('KEY');
     }
 
-    public function setCurrency($value)
+    public function setKEY($value)
     {
-        return $this->setParameter('currency', $value);
+        return $this->setParameter('KEY', $value);
     }
 
-    public function setReturnUrl($value)
-    {
-        return $this->setParameter('returnUrl', $value);
-    }
-
-    public function setConfirmUrl($value)
-    {
-        return $this->setParameter('confirmUrl', $value);
-    }
-
-    public function getPaymentNo()
-    {
-        return $this->getParameter('paymentNo');
-    }
-	
-    public function setPaymentNo($value)
-    {
-        return $this->setParameter('paymentNo', $value);
-    }
-
-    public function getBillingAddress()
-    {
-        return $this->getParameter('billingAddress');
-    }
-
-    public function setBillingAddress(array $parameters = [])
-    {
-        $this->setParameter('billingAddress', $parameters);
-    }
-
-    public function purchase(array $parameters = [])
+    public function purchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\EuPlatesc\Message\PurchaseRequest', $parameters);
     }
 
-    public function completePurchase(array $parameters = [])
+    public function completePurchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\EuPlatesc\Message\CompletePurchaseRequest', $parameters);
     }
