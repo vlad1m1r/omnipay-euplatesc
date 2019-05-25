@@ -4,14 +4,11 @@ namespace Omnipay\EuPlatesc\Message;
 
 use Omnipay\Common\Message\AbstractResponse;
 
-/**
- * 2Checkout Complete Purchase Response
- */
 class CompletePurchaseResponse extends AbstractResponse
 {
     public function isSuccessful()
     {
-        return true;
+        return $this->data['action']==0;
     }
 
     public function getTransactionReference()

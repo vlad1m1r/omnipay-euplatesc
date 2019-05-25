@@ -4,24 +4,32 @@ namespace Omnipay\EuPlatesc\Message;
 
 use Omnipay\Common\Exception\InvalidResponseException;
 
-/**
- * 2Checkout Complete Purchase Request
- */
+
 class CompletePurchaseRequest extends PurchaseRequest
 {
     public function getData()
     {
-        $orderNo = $this->httpRequest->request->get('order_number');
+		
+		$zcrsp =  array (
+			'amount'     => addslashes(trim($this->httpRequest->request->get('amount']))),
+			'curr'       => addslashes(trim($this->httpRequest->request->get('curr'))),  
+			'invoice_id' => addslashes(trim($this->httpRequest->request->get('invoice_id'))),
+			'ep_id'      => addslashes(trim($this->httpRequest->request->get('ep_id'))), 
+			'merch_id'   => addslashes(trim($this->httpRequest->request->get('merch_id'))),
+			'action'     => addslashes(trim($this->httpRequest->request->get('action'))), 
+			'message'    => addslashes(trim($this->httpRequest->request->get('message'))),
+			'approval'   => addslashes(trim($this->httpRequest->request->get('approval'))),
+			'timestamp'  => addslashes(trim($this->httpRequest->request->get('timestamp'))),
+			'nonce'      => addslashes(trim($this->httpRequest->request->get('nonce'))),
+		);
+		
+		$zcrsp['fp_hash'] = strtoupper($this->euplatesc_mac($zcrsp, $this->getKEY()));
+		$fp_hash=addslashes(trim($this->httpRequest->request->get('fp_hash')));
+		
 
-        // strange exception specified by 2Checkout
-        if ($this->getTestMode()) {
-            $orderNo = '1';
-        }
-
-        $key = md5($this->getKEY().$this->getMID().$orderNo.$this->getAmount());
-        if (strtolower($this->httpRequest->request->get('key')) !== $key) {
-            throw new InvalidResponseException('Invalid key');
-        }
+		if($zcrsp['fp_hash']!==$fp_hash){
+			throw new InvalidResponseException('Invalid key');
+		}
 
         return $this->httpRequest->request->all();
     }
