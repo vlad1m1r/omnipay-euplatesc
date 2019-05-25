@@ -29,6 +29,10 @@ class CompletePurchaseRequest extends PurchaseRequest
 
 		if($zcrsp['fp_hash']!==$fp_hash){
 			throw new InvalidResponseException('Invalid key');
+		}else{
+			if($zcrsp['action']!=0){
+				throw new InvalidResponseException($zcrsp['message']);
+			}
 		}
 
         return $this->httpRequest->request->all();
