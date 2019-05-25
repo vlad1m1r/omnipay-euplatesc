@@ -11,7 +11,7 @@ class CompletePurchaseRequest extends PurchaseRequest
     {
 		
 		$zcrsp =  array (
-			'amount'     => addslashes(trim($this->httpRequest->request->get('amount']))),
+			'amount'     => addslashes(trim($this->httpRequest->request->get('amount'))),
 			'curr'       => addslashes(trim($this->httpRequest->request->get('curr'))),  
 			'invoice_id' => addslashes(trim($this->httpRequest->request->get('invoice_id'))),
 			'ep_id'      => addslashes(trim($this->httpRequest->request->get('ep_id'))), 
@@ -24,8 +24,8 @@ class CompletePurchaseRequest extends PurchaseRequest
 		);
 		
 		$zcrsp['fp_hash'] = strtoupper($this->euplatesc_mac($zcrsp, $this->getKEY()));
-		$fp_hash=addslashes(trim($this->httpRequest->request->get('fp_hash')));
 		
+		$fp_hash=addslashes(trim($this->httpRequest->request->get('fp_hash')));
 
 		if($zcrsp['fp_hash']!==$fp_hash){
 			throw new InvalidResponseException('Invalid key');
@@ -36,6 +36,7 @@ class CompletePurchaseRequest extends PurchaseRequest
 
     public function sendData($data)
     {
+
         return $this->response = new CompletePurchaseResponse($this, $data);
     }
 }
