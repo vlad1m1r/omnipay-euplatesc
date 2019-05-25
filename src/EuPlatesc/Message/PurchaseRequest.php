@@ -57,8 +57,8 @@ class PurchaseRequest extends AbstractRequest
             $data['phone'] = $this->getCard()->getPhone();
             $data['email'] = $this->getCard()->getEmail();
         }
-		$data['ExtraData[successurl]'] = $this->getReturnUrl();
-		$data['ExtraData[silenturl]'] = $this->getNotifyUrl();
+		$data['returnurl'] = $this->getReturnUrl();
+
         return $data;
     }
 
