@@ -8,12 +8,11 @@ class CompletePurchaseResponse extends AbstractResponse
 {
     public function isSuccessful()
     {
-		return true;
         return $this->data['action']=="0";
     }
 
     public function getTransactionReference()
     {
-        return isset($this->data['ep_id']) ? $this->data['ep_id'] : "nuebine";
+        return isset($this->data['ep_id']) ? $this->data['ep_id'] : null;
     }
 }
